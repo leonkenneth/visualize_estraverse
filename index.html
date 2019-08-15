@@ -1,25 +1,37 @@
 <!DOCTYPE html>
 <html>
-<head lang="en">
-    <meta charset="UTF-8">
+  <head lang="en">
+    <meta charset="UTF-8" />
     <title>visualize estraverse step</title>
-    <link rel="stylesheet" href="css/style.css"/>
-    <link rel="stylesheet" href="css/codemirror.css"/>
-    <link rel="stylesheet" href="css/mbo.css"/>
-</head>
-<body>
-<label for="code-area"></label><textarea id="code-area"></textarea>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/codemirror.css" />
+    <link rel="stylesheet" href="css/mbo.css" />
+  </head>
+  <body>
+    <div class="columns">
+      <div class="column panel">
+        <h4>Source</h4>
+        <label for="code-area"></label><textarea id="code-area"></textarea>
+      </div>
+      <div class="column panel">
+        <h4>Properties</h4>
+        <label for="properties-area"></label
+        ><textarea class="pre-area" id="properties-area"></textarea>
+      </div>
+    </div>
 
-<div style="height: 50px">
-    <button id="enter-button" class="enter-color">Enter</button>
-    <button id="leave-button" class="leave-color">Leave</button>
-    <button id="both-button">Both(Enter/Leave)</button>
-    <a href="#permanent" id="create-permanent">Permanent link</a>
-    <iframe src="http://ghbtns.com/github-btn.html?user=azu&repo=visualize_estraverse&type=watch&count=true&size=large"
-            allowtransparency="true" frameborder="0" scrolling="0" width="170" height="30"></iframe>
-</div>
-<script src="public/codemirror.js" type="text/javascript"></script>
-<script src="public/app.js" type="text/javascript"></script>
+    <div class="panel">
+      <summary
+        ><h4>Nodes</h4>
+        <details>
+          <label for="nodes-area"></label
+          ><textarea class="pre-area" id="nodes-area"></textarea>
+        </details>
+      </summary>
+      <button id="step-button">Step</button>
+    </div>
 
-</body>
+    <script src="public/codemirror.js" type="text/javascript"></script>
+    <script src="public/app.js" type="text/javascript"></script>
+  </body>
 </html>

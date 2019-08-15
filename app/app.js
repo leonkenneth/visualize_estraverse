@@ -1,57 +1,55 @@
-/**
- * Created by azu on 2014/03/23.
- * LICENSE : MIT
- */
-"use strict";
-var styleChanger = require("./styleChanger");
-var textArea = document.getElementById("code-area");
+const textArea = document.getElementById("code-area");
+const nodesArea = document.getElementById("nodes-area");
+const propertiesArea = document.getElementById("properties-area");
+
+const savedNodesAreaContent = localStorage.getItem("savedNodesAreaContent");
+if (savedNodesAreaContent) {
+  nodesArea.value = savedNodesAreaContent;
+}
+
+setInterval(() => {
+  localStorage.setItem("savedNodesAreaContent", nodesArea.value);
+}, 1000);
+
 var editor = CodeMirror.fromTextArea(textArea, {
-    mode: "javascript",
-    lineNumbers: true
+  mode: "javascript",
+  lineNumbers: true
 });
+
 require("./hash-injector")(editor);
-var traverseSteper = require("./traverseSteper");
-function highlight(locs) {
-    if (locs.length == 0) {
-        styleChanger.dispose();
-        return;
-    }
-    var loc = locs.pop();
-    selectLoc(loc, function () {
-        setTimeout(function () {
-            highlight(locs);
-        }, 300);
-    })
+
+function highlightNode(node) {
+  var loc = node.loc;
+
+  editor.setSelection(
+    { line: loc.start.line - 1, ch: loc.start.column },
+    { line: loc.end.line - 1, ch: loc.end.column }
+  );
 }
-function selectLoc(item, callback) {
-    var loc = item.loc;
-    if (item.visitorType == "enter") {
-        styleChanger.insert(".CodeMirror-selected { background: rgb(255, 102, 102); }");
-    } else if (item.visitorType == "leave") {
-        styleChanger.insert(".CodeMirror-selected { background: rgb(81, 207, 207); }");
-    }
-    editor.setSelection({line: loc.start.line - 1, ch: loc.start.column}, {line: loc.end.line - 1, ch: loc.end.column});
-    callback();
+
+function setProperties(node) {
+  const nodeClone = Object.assign({}, node);
+  delete nodeClone.loc;
+  propertiesArea.value = JSON.stringify(nodeClone, null, 2);
 }
-document.getElementById("enter-button").addEventListener("click", function () {
-    var editingCode = editor.getValue();
-    var nodes = traverseSteper(editingCode);
-    var enterLocs = nodes.enter;
-    highlight(enterLocs.reverse());
-});
-document.getElementById("leave-button").addEventListener("click", function () {
-    var editingCode = editor.getValue();
-    var nodes = traverseSteper(editingCode);
-    var levesLoc = nodes.leave;
-    highlight(levesLoc.reverse());
-});
-document.getElementById("both-button").addEventListener("click", function () {
-    var editingCode = editor.getValue();
-    var nodes = traverseSteper(editingCode);
-    var bothLoc = nodes.both;
-    highlight(bothLoc.reverse());
-});
-document.getElementById("create-permanent").addEventListener("click", function (event) {
-    event.preventDefault();
-    location.hash = encodeURIComponent(editor.getValue());
+
+let nodes = null;
+let currentNodeIndex = null;
+
+document.getElementById("step-button").addEventListener("click", function() {
+  if (currentNodeIndex === null) {
+    nodes = JSON.parse(nodesArea.value);
+    currentNodeIndex = 0;
+  }
+
+  const nextNode = nodes[currentNodeIndex];
+
+  highlightNode(nextNode);
+  setProperties(nextNode);
+
+  currentNodeIndex++;
+
+  if (currentNodeIndex === nodes.length) {
+    currentNodeIndex = null;
+  }
 });
